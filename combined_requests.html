@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+  <style type="text/css">
+  	.container{
+  		display: flex;
+  		margin: 120px;
+  		box-sizing: border-box;
+  		justify-content: center;
+  		flex-wrap: wrap;
+  		align-items: center;
+  		align-content: flex-start;
+  	}
+  	.box{
+  		flex-basis: 150px;
+  		height: 50px;
+  		flex-grow: 1;
+  		margin: 50px;
+  		outline: none;
+  		border:2px solid blue;
+  		border-radius:20px;
+  		background-color: white;
+  		color: blue;
+  		cursor: pointer;
+  		transition:all 0.2s ease-in-out 0.35s;
+  	}
+  	.box:hover{
+  		background-color:blue;
+  		color: white;
+  	}
+  </style>
+</head>
+<body>
+	<h1 style="text-align: center; margin-top: 50px;text-transform: uppercase;color:darkgreen">Four ways of writing ajax requests</h1>
+	<div class="container">
+<button class="box" onclick="xhr()">XHR(XMLHTTPRESPONSE</button>
+<button class="box" onclick="jquery()">JQUERY</button>
+<button class="box" onclick="axios_url()">AXIOS</button>
+<button class="box" onclick="fetch_url()">FETCH</button>
+</div>
+<p id="target" style="text-align: center; font-size:25px;">Sample Text</p>
+</body>
+<script type="text/javascript">
+	function xhr(){
+		var xhr=new XMLHttpRequest();
+		xhr.onreadystatechange=function(){
+			if(xhr.readyState==4&&xhr.status==200){
+				document.querySelector("#target").innerHTML=JSON.parse(xhr.responseText)[0];
+			}
+			else{
+				console.log("Error Occurred!")
+			}
+		}
+		xhr.open("GET","https://ron-swanson-quotes.herokuapp.com/v2/quotes");
+		xhr.send();
+	}
+	function jquery(){
+         $.getJSON("https://ron-swanson-quotes.herokuapp.com/v2/quotes")
+         .done(function(res){
+               $("#target").html(res); 
+         })
+         .fail(function(err) {
+                console.log(err);
+         })
+         // $.ajax({
+         // 	url: 'https://ron-swanson-quotes.herokuapp.com/v2/quotes',
+         // 	type: 'GET',
+         // 	dataType: 'json',
+         // })
+         // .done(function(res) {
+         // 	console.log("success");
+         // })
+         // .fail(function() {
+         // 	console.log("error");
+         // });
+	}
+	function fetch_url(){
+        fetch("https://ron-swanson-quotes.herokuapp.com/v2/quotes")
+        .then(function(res) {
+        	 if(!res.ok){
+               throw Error(res.status)
+           }
+           return res.json()
+        }).then(function(data) {
+        	document.querySelector("#target").innerHTML=data;
+        }).catch(function(error) {
+            console.log(error);
+        })
+	}
+	function axios_url(){
+        axios.get("https://ron-swanson-quotes.herokuapp.com/v2/quotes")
+        .then(function(res) {
+            document.querySelector("#target").innerHTML=res.data;
+        }).catch(function(err) {
+           if(err.response)
+           	console.log("Problem with response!!")
+           else if(err.request)
+           	console.log("Problem with request!!")
+           else 
+           	console.log("Error",err.message)
+        })
+	}
+</script>
+</html>
